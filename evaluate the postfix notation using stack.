@@ -1,0 +1,75 @@
+#include<stdio.h>
+#include<stdlib.h>
+#include<string.h>
+#include<ctype.h>
+#define m_s 10000
+char s[m_s];
+int top = -1;
+void push(int n)
+{
+    s[++top] = n;
+}
+int pop()
+{
+    if(top == -1)
+    {
+        printf("stack is emtpy\n");
+    }
+    return s[top--];
+}
+int sum(int n1,int n2,char d)
+{
+    switch(d)
+    {
+        case'+':
+            push(n1 + n2);
+            break;
+        case'-':
+            push(n1 - n2);
+            break;
+        case'*':
+            push(n1 * n2);
+            break;
+        case'/':
+            push(n1 / n2);
+            break;
+        case'^':
+            push(n1 ^ n2);
+            break;
+        default:
+            return -1;
+    }
+}
+int op(char p)
+{
+    return (p == '+'||p == '-'||p == '*'||p == '/'||p == '^');
+}
+int postev(char* a)
+{
+    int i,n1,n2,r;
+    int l = strlen(a);
+    
+    for(i=0;i<l;i++)
+    {
+        if(isalnum(a[i]))
+        {
+            push(a[i] - '0');
+        }
+        else if(op(a[i]))
+        {
+            n1 = pop();
+            n2 = pop();
+            sum(n1,n2,a[i]);
+        }
+    }
+    r = pop();
+    return r;
+}
+int main()
+{
+    char a[m_s];
+    printf("Enter the postfix expression:");
+    gets(a);
+    
+    printf("value of expression: %d\n",postev(a));
+}
