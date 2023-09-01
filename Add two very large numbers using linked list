@@ -1,0 +1,114 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef struct node
+{
+    int data;
+    struct node* next;
+}
+node;
+
+node* createnode(int value)
+{
+    node* newnode = (node*)malloc(sizeof(node));
+    newnode->data = value;
+    newnode->next = NULL;
+    return newnode;
+}
+
+void insertnode(node** head, int value)
+{
+    node* newnode = createnode(value);
+    if (*head == NULL)
+    {
+        *head = newnode;
+    }
+    else
+    {
+        node* current = *head;
+        while (current->next != NULL)
+        {
+            current = current->next;
+        }
+        current->next = newnode;
+    }
+}
+
+void display(node* head)
+{
+    node* ptr = head;
+    while (ptr != NULL)
+    {
+        printf("%d", ptr->data);
+        ptr = ptr->next;
+    }
+}
+
+node* add(node* num1, node* num2)
+{
+    node* result = NULL;
+    int carry = 0;
+
+    while (num1 != NULL || num2 != NULL || carry)
+    {
+        int sum = carry;
+
+        if (num1 != NULL)
+        {
+            sum += num1->data;
+            num1 = num1->next;
+        }
+
+        if (num2 != NULL) 
+        {
+            sum += num2->data;
+            num2 = num2->next;
+        }
+
+        carry = sum / 10;
+        sum %= 10;
+
+        node* newnode = createnode(sum);
+        newnode->next = result;
+        result = newnode;
+    }
+
+    return result;
+
+}
+
+int main()
+{
+    char s1[10000];  
+    char s2[10000];
+    node* num1 = NULL;
+    node* num2 = NULL;
+
+    printf("Enter the first large number(+ve): ");
+    scanf("%s", s1);
+
+    printf("Enter the second large number(+ve): ");
+    scanf("%s", s2);
+
+    int l1 = strlen(s1);
+    int l2 = strlen(s2);
+
+    for (int i = l1 - 1; i >= 0; i--)
+    {
+        insertnode(&num1, s1[i] - '0');
+    }
+
+    for (int i = l2 - 1; i >= 0; i--) 
+    {
+        insertnode(&num2, s2[i] - '0');
+    }
+
+    node* sum = add(num1, num2);
+
+    printf("Sum: ");
+    display(sum);
+    printf("\n");
+
+    return 0;
+}
