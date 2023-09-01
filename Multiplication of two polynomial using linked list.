@@ -1,0 +1,174 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct node
+{
+    int coefficient;
+    int power;
+    struct node* next;
+}node;
+
+node* createnode(int coeff, int pow)
+{
+    node* newnode;
+    newnode = (node*)malloc(sizeof(node));
+    newnode -> coefficient = coeff;
+    newnode -> power = pow;
+    newnode -> next = NULL;
+    
+    return newnode;
+}
+
+void insert(node** head, int coeff, int pow)
+{
+    node* newnode = createnode(coeff, pow);
+    
+    if(*head == NULL || (*head) -> power < pow)
+    {
+        newnode -> next = *head;
+        *head = newnode;
+        return;
+    }
+    
+    node* ptr = *head;
+        while(ptr->next!=NULL && ptr -> next -> power >= pow)
+        {
+            ptr = ptr -> next;
+        }
+        newnode -> next = ptr -> next;
+        ptr -> next = newnode;
+}
+
+
+node* mulpolynomial(node* poly1, node* poly2)
+{
+    node* result = NULL;
+    node* ptr1 = poly1;
+    int mulcoeff, sumpow;
+    while(ptr1 != NULL)
+    {
+    	node* ptr2 = poly2;
+    	while(ptr2 != NULL)
+        {
+        	mulcoeff = ptr1 -> coefficient * ptr2 -> coefficient;
+            sumpow = ptr1 -> power + ptr2 -> power;
+            
+            node* newresult = result;
+            while(newresult != NULL)
+            {
+                if(newresult -> power == sumpow)
+                {
+                    newresult -> coefficient += mulcoeff;
+                    break;
+                }
+                
+                newresult = newresult -> next;  
+            }
+            if(newresult == NULL)
+            {
+                insert(&result, mulcoeff, sumpow);
+            }
+            ptr2 = ptr2 -> next;       
+        }
+        ptr1 = ptr1 -> next;
+    }
+    
+    
+    node* ptr3 = result, *ptr4 = result -> next;
+    while(ptr3 != NULL && ptr4 != NULL)
+    {
+        if(ptr3 ->power == ptr4 -> power)
+        {
+            result -> next -> coefficient = ptr3 -> coefficient + ptr4 -> coefficient;
+            result = result -> next;
+            ptr3 = ptr3 -> next;
+            ptr4 = ptr4 -> next;
+        }
+        else
+        {
+            ptr3 = ptr3 -> next;
+            ptr4 = ptr4 -> next;
+        }
+    }
+    return result;
+}
+
+void display(node* node1)
+{
+    node* ptr = node1;
+    
+    while(ptr!=NULL)
+    {
+        printf(" %dX^%d ",ptr -> coefficient,ptr -> power);
+        if(ptr -> next!=NULL && ptr -> next -> coefficient >=0)
+        {
+            printf("+");
+        }
+        ptr = ptr -> next;
+    }
+    printf("\n");
+}
+int main()
+{
+    int coeff;
+    int pow;
+    int n;
+    node* poly1;
+    node* poly2;
+    
+    while(1)
+    {
+        printf("\nEnter 1 to input polynomials and 0 to exit:");
+        scanf("%d",&n);
+        
+        if(n==1)
+        {
+            printf("Enter the first polynomial (coefficient, power, enter -1 -1 to stop):\n");
+            while(1)
+            {
+                printf("\nEnter the coefficient:");
+                scanf("%d",&coeff);
+                printf("Enter the power:");
+                scanf("%d",&pow);
+              if(coeff == -1 && pow == -1)
+                {
+                    break;
+                }
+                insert(&poly1, coeff, pow);
+            }
+            printf("\nThis is the first polynomial:\n");
+            display(poly1);
+            
+            printf("\nEnter the second polynomial (coefficient, power, enter -1 -1 to stop):\n");
+            while(1)
+            {
+                printf("\nEnter the coefficient:");
+                scanf("%d",&coeff);
+                printf("Enter the power:");
+                scanf("%d",&pow);
+                if(coeff == -1 && pow == -1)
+                {
+                    break;
+                }
+                insert(&poly2,coeff,pow);
+            }
+            printf("\nThis is the second polynomial:\n");
+            display(poly2);
+        
+            node* sum = mulpolynomial(poly1, poly2);
+             
+            printf("\nThis is the first polynomial: ");
+            display(poly1);
+            printf("This is the second polynomial: ");
+            display(poly2);
+            printf("Sum of the two polynomials: ");
+            display(sum);
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    return 0;
+}
