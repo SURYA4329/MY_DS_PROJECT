@@ -1,0 +1,162 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+typedef struct node
+{
+    int coefficient;
+    int power;
+    struct node* next;
+}node;
+
+node* createnode(int coeff, int pow)
+{
+    node* newnode;
+    newnode = (node*)malloc(sizeof(node));
+    newnode -> coefficient = coeff;
+    newnode -> power = pow;
+    newnode -> next = NULL;
+    
+    return newnode;
+}
+
+void insertend(node** head, int coeff, int pow)
+{
+    node* newnode = createnode(coeff, pow);
+    
+    if(*head == NULL)
+    {
+        *head = newnode;
+        return;
+    }
+    
+    node* ptr = *head;
+        while(ptr->next!=NULL)
+        {
+            ptr = ptr -> next;
+        }
+        ptr -> next = newnode;
+}
+
+node* addpolynomial(node* poly1, node* poly2)
+{
+    node* result = NULL;
+    node* ptr = NULL;
+    
+    while(poly1 && poly2)
+    {
+        if(poly1 -> power > poly2 -> power)
+        {
+            insertend(&result, poly1 -> coefficient, poly1 -> power);
+            poly1 = poly1 -> next;
+        }
+        else if(poly1 -> power < poly2 -> power)
+        {
+            insertend(&result, poly2 -> coefficient, poly2 -> power);
+            poly2 = poly2 -> next;
+        }
+        else
+        {
+            int sumcoeff = poly1 -> coefficient + poly2 -> coefficient;
+            if(sumcoeff!=0)
+            {
+                insertend(&result, sumcoeff ,poly1 -> power);
+            }
+            poly1 = poly1 -> next;
+            poly2 = poly2 -> next;
+        }
+    }
+    
+    while(poly1)
+    {
+        insertend(&result, poly1 -> coefficient, poly1 -> power);
+        poly1 = poly1->next;
+    }
+    
+    while(poly2)
+    {
+        insertend(&result, poly2 -> coefficient, poly2 -> power);
+        poly2 = poly2->next;
+    }
+    
+    return result;
+}
+
+void display(node* node1)
+{
+    node* ptr = node1;
+    
+    while(ptr!=NULL)
+    {
+        printf(" %dX^%d ",ptr -> coefficient,ptr -> power);
+        if(ptr -> next!=NULL && ptr -> next -> coefficient >=0)
+        {
+            printf("+");
+        }
+        ptr = ptr -> next;
+    }
+    printf("\n");
+}
+int main()
+{
+    int coeff;
+    int pow;
+    int n;
+    node* poly1;
+    node* poly2;
+    
+    while(1)
+    {
+        printf("\nEnter 1 to input polynomials and 0 to exit:");
+        scanf("%d",&n);
+        
+        if(n==1)
+        {
+            printf("Enter the first polynomial (coefficient, power, enter -1 -1 to stop):\n");
+            while(1)
+            {
+                printf("\nEnter the coefficient:");
+                scanf("%d",&coeff);
+                printf("Enter the power:");
+                scanf("%d",&pow);
+                if(coeff == -1 && pow == -1)
+                {
+                    break;
+                }
+                insertend(&poly1, coeff, pow);
+            }
+            printf("\nThis is the first polynomial:\n");
+            display(poly1);
+            
+            printf("\nEnter the second polynomial (coefficient, power, enter -1 -1 to stop):\n");
+            while(1)
+            {
+                printf("\nEnter the coefficient:");
+                scanf("%d",&coeff);
+                printf("Enter the power:");
+                scanf("%d",&pow);
+                if(coeff == -1 && pow == -1)
+                {
+                    break;
+                }
+                insertend(&poly2,coeff,pow);
+            }
+            printf("\nThis is the second polynomial:\n");
+            display(poly2);
+        
+            node* sum = addpolynomial(poly1, poly2);
+             
+            printf("\nThis is the first polynomial: ");
+            display(poly1);
+            printf("This is the second polynomial: ");
+            display(poly2);
+            printf("Sum of the two polynomials: ");
+            display(sum);
+        }
+        else
+        {
+            break;
+        }
+    }
+
+    return 0;
+}
