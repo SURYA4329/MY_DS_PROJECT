@@ -1,0 +1,115 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+typedef struct Node {
+    int data;
+    struct Node* next;
+}
+node;
+node* merge(node* left, node* right) {
+    node* result = NULL;
+
+    if (left == NULL)
+        return right;
+    if (right == NULL)
+        return left;
+
+    if (left->data <= right->data) {
+        result = left;
+        result->next = merge(left->next, right);
+    } else {
+        result = right;
+        result->next = merge(left, right->next);
+    }
+
+    return result;
+}
+
+void mergesort(node** headref) {
+    node* head = *headref;
+    node* left;
+    node* right;
+
+    if (head == NULL || head->next == NULL)
+        return;
+
+    node* slow = head;
+    node* fast = head->next;
+
+    while (fast != NULL) {
+        fast = fast->next;
+        if (fast != NULL) {
+            slow = slow->next;
+            fast = fast->next;
+        }
+    }
+
+    left = head;
+    right = slow->next;
+    slow->next = NULL;
+
+    mergesort(&left);
+    mergesort(&right);
+
+    *headref = merge(left, right);
+}
+
+void insert(node** headref, int data) {
+    node* newnode = (node*)malloc(sizeof(node));
+    newnode->data = data;
+    newnode->next = NULL;
+
+    if (*headref == NULL) {
+        *headref = newnode;
+    } else {
+        struct Node* current = *headref;
+        while (current->next != NULL) {
+            current = current->next;
+        }
+        current->next = newnode;
+    }
+}
+
+void printlist(node* head) {
+    node* current = head;
+    while (current != NULL) {
+        printf("%d ", current->data);
+        current = current->next;
+    }
+    printf("\n");
+}
+
+int main() {
+    int n,y;
+    while(1)
+    {
+        printf("Enter 1 to start / 0 to exit:");
+        scanf("%d",&y);
+        if(y==1)
+        {
+            printf("Enter the size of the linked list:");
+            scanf("%d", &n);
+            
+            node* head = NULL;
+        
+            for (int i = 0; i < n; i++) {
+                int data;
+                printf("Enter the number %d:",i);
+                scanf("%d", &data);
+                insert(&head, data);
+            }
+        
+            mergesort(&head);
+        
+            printf("Sorted Linked List: ");
+            printlist(head);
+        }
+        else
+        {
+            exit(0);
+        }
+    } 
+    
+
+    return 0;
+}
